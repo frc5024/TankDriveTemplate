@@ -4,18 +4,18 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveTrain extends SubsystemBase {
   private static DriveTrain mInstance = null;
 
-  private TalonSRX rightMaster;
-  private TalonSRX rightFollower;
-  private TalonSRX leftMaster;
-  private TalonSRX leftFollower;
+  private TalonFX rightMaster;
+  private TalonFX rightFollower;
+  private TalonFX leftMaster;
+  private TalonFX leftFollower;
 
   // Make singleton
   public static DriveTrain getInstance() {
@@ -29,18 +29,18 @@ public class DriveTrain extends SubsystemBase {
   /** Creates a new DriveTrain. */
   public DriveTrain() {
     // Initialize motors
-    rightMaster = new TalonSRX(2); // Input correct values for your motors
-    rightFollower = new TalonSRX(1);
-    leftMaster = new TalonSRX(3);
-    leftFollower = new TalonSRX(4);
+    rightMaster = new TalonFX(3); // Input correct values for your motors
+    rightFollower = new TalonFX(4);
+    leftMaster = new TalonFX(1);
+    leftFollower = new TalonFX(2);
 
     // Invert right motors for minitbot. Other drive bases may not need this.
     rightMaster.setInverted(true);
     rightFollower.setInverted(true);
 
     // Set followers
-    rightFollower.follow(rightMaster);
-    leftFollower.follow(leftMaster);
+    rightFollower.setControl(new Follower(rightMaster.getDeviceID(), false));
+    leftFollower.setControl(new Follower(leftMaster.getDeviceID(), false));
   }
 
   // Sets the speed of the drive motors according to supplied values
@@ -50,14 +50,14 @@ public class DriveTrain extends SubsystemBase {
     double leftSpeed = speed + rotation;
 
     // Set right and left motor speeds
-    rightMaster.set(ControlMode.PercentOutput, rightSpeed);
-    leftMaster.set(ControlMode.PercentOutput, leftSpeed);
+    rightMaster.set(rightSpeed);
+    leftMaster.set(leftSpeed);
   }
 
   // Stops the drive motors
   public void stop() {
-    rightMaster.set(ControlMode.PercentOutput, 0);
-    leftMaster.set(ControlMode.PercentOutput, 0);
+    rightMaster.stopMotor();
+    leftMaster.stopMotor();
   }
 
   @Override
